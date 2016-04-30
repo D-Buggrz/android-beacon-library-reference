@@ -7,10 +7,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import org.altbeacon.beaconreference.MonitoringActivity;
 import org.altbeacon.beaconreference.R;
+
+import com.dbuggrz.helpers.DownloadImageTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +36,7 @@ public class HomeActivity extends Activity {
         mainListView = (ListView) findViewById( R.id.mainListView );
 
         // Create and populate a List of planet names.
-        String[] planets = new String[] { "Alan's Posts", "Employee Directory", "Conference Rooms", "Cafe Menu", "Emergency Exits"};
+        String[] planets = new String[] { "Alan's Posts", "Employee Directory", "Conference Rooms Near Me", "Cafe Menu", "Emergency Exits"};
         ArrayList<String> planetList = new ArrayList<String>();
         planetList.addAll( Arrays.asList(planets) );
 
@@ -53,9 +56,15 @@ public class HomeActivity extends Activity {
                     Intent monitoringIntent = new Intent(view.getContext(), MonitoringActivity.class);
                     startActivity(monitoringIntent);
                 }
+                if ("Conference Rooms Near Me".equalsIgnoreCase(listItemText)) {
+                    Intent monitoringIntent = new Intent(view.getContext(), RoomListActivity.class);
+                    startActivity(monitoringIntent);
+                }
             }
         });
 
+        new DownloadImageTask((ImageView) findViewById(R.id.buildingImageView))
+                .execute("http://imgur.com/Shl0SPv");
 
     }
 
