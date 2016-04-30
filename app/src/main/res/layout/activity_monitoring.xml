@@ -36,7 +36,11 @@
         android:layout_below="@+id/monitoringText"
         android:text="Start Ranging" />
 
-    <include layout="@layout/content_beacon"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listview_beacons"
+        android:layout_gravity="center_horizontal|top" />
 
 
 </RelativeLayout>

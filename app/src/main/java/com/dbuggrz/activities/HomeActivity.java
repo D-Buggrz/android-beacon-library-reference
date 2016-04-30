@@ -49,7 +49,7 @@ public class HomeActivity extends Activity {
                 String listItemText = listAdapter.getItem(position);
                 // Executed in an Activity, so 'this' is the Context
                 // The fileUrl is a string URL, such as "http://www.example.com/image.png"
-                if ("Conference Rooms".equalsIgnoreCase(listItemText)) {
+                if ("Employee Directory".equalsIgnoreCase(listItemText)) {
                     Intent monitoringIntent = new Intent(view.getContext(), MonitoringActivity.class);
                     startActivity(monitoringIntent);
                 }

@@ -9,21 +9,39 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 
  * @author dyoung
  * @author Matt Tyler
  */
-public class MonitoringActivity extends Activity  {
+public class MonitoringActivity extends Activity implements BeaconConsumer {
 	protected static final String TAG = "MonitoringActivity";
 	private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+	private ArrayAdapter<String> listAdapter ;
 
+	BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
+
+	private List<String> beaconUUIDs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +49,9 @@ public class MonitoringActivity extends Activity  {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_monitoring);
 		verifyBluetooth();
-        logToDisplay("Application just launched");
+
+		ArrayList<String> listOfDetectedBeacons = new ArrayList<String>(0);
+		listAdapter =  new ArrayAdapter<String>(this, R.layout.simplerow, listOfDetectedBeacons);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Android M Permission check
@@ -53,6 +73,12 @@ public class MonitoringActivity extends Activity  {
                 builder.show();
             }
         }
+		BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
+		beaconReferenceApplication.setMonitoringActivity(this);
+
+		beaconUUIDs = new ArrayList<>();
+		beaconManager.bind(this);
+		Log.i(TAG, "Starting the ranging activity.");
 	}
 
 	@Override
@@ -90,14 +116,24 @@ public class MonitoringActivity extends Activity  {
     @Override
     public void onResume() {
         super.onResume();
-        ((BeaconReferenceApplication) this.getApplicationContext()).setMonitoringActivity(this);
+        BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
+		beaconReferenceApplication.setMonitoringActivity(this);
+
+		BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
+		beaconManager.bind(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((BeaconReferenceApplication) this.getApplicationContext()).setMonitoringActivity(null);
     }
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		beaconManager.unbind(this);
+		this.beaconUUIDs = null;
+	}
 
 	private void verifyBluetooth() {
 		Log.i(TAG, "checking for bluetooth");
@@ -139,12 +175,95 @@ public class MonitoringActivity extends Activity  {
 
     public void logToDisplay(final String line) {
     	runOnUiThread(new Runnable() {
-    	    public void run() {
-    	    	EditText editText = (EditText)MonitoringActivity.this
-    					.findViewById(R.id.monitoringText);
-       	    	editText.append(line+"\n");            	    	    		
-    	    }
-    	});
+			public void run() {
+				EditText editText = (EditText) MonitoringActivity.this
+						.findViewById(R.id.monitoringText);
+				editText.append(line + "\n");
+			}
+		});
     }
+
+	@Override
+	public void onBeaconServiceConnect() {
+		Log.i(TAG, "We have a service connection - Monitoring activity service connect. ");
+		beaconManager.setMonitorNotifier(new MonitorNotifier() {
+			@Override
+			public void didEnterRegion(Region region) {
+				Log.i(TAG, "I just saw an beacon for the first time!");
+			}
+
+			@Override
+			public void didExitRegion(Region region) {
+				Log.i(TAG, "I no longer see an beacon");
+			}
+
+			@Override
+			public void didDetermineStateForRegion(int state, Region region) {
+				Log.i(TAG, "I have just switched from seeing/not seeing beacons: " + state);
+			}
+		});
+
+		beaconManager.setRangeNotifier(new RangeNotifier() {
+			@Override
+			public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+				if (beacons.size() > 0) {
+					//EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
+					boolean foundANewBeacon = false;
+					for (Beacon nextBeacon : beacons) {
+						String beaconUUIDString = String.valueOf(nextBeacon.getBluetoothAddress());
+						Log.d(TAG, "Found a beacon - " + beaconUUIDString +
+								" address: " + nextBeacon.getBluetoothAddress() +
+								", name: " + nextBeacon.getBluetoothName() +
+								", distance: " + nextBeacon.getDistance());
+						if (!beaconUUIDs.contains(beaconUUIDString)) {
+							beaconUUIDs.add(beaconUUIDString);
+							foundANewBeacon = true;
+						}
+					}
+					if (foundANewBeacon) {
+						addBeaconsToList();
+					}
+				}
+			}
+
+		});
+
+		try {
+			beaconManager.startRangingBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public void addBeaconsToList() {
+
+		Log.d(TAG, "Looking for the currently detected beacons. ");
+		runOnUiThread(new Runnable() {
+			public void run() {
+				if (beaconUUIDs != null && beaconUUIDs.size() > 0) {
+					listAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.simplerow, beaconUUIDs);
+					ListView listView = (ListView) findViewById(R.id.listview_beacons);
+					listView.setAdapter(listAdapter);
+
+					listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+						@Override
+						public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+							String listItemText = listAdapter.getItem(position);
+							// Executed in an Activity, so 'this' is the Context
+							// The fileUrl is a string URL, such as "http://www.example.com/image.png"
+							Toast toast = Toast.makeText(getApplicationContext(), listItemText, Toast.LENGTH_SHORT);
+							toast.show();
+						}
+					});
+				} else {
+					Toast toast = Toast.makeText(getApplicationContext(), "There are no regions.", Toast.LENGTH_SHORT);
+					toast.show();
+				}
+			}
+		});
+	}
 
 }

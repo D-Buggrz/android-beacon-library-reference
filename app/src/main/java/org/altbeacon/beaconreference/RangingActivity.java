@@ -63,7 +63,9 @@ public class RangingActivity extends Activity implements BeaconConsumer {
 
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {   }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private void logToDisplay(final String line) {
