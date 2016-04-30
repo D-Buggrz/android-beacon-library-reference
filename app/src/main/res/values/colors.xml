@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="holo_light_primary">#d7001c</color>
+    <color name="black">#ffffff</color>
+    <color name="primary_material_light">#d7001c</color>
+    <color name="accent_material_light">#d7001c</color>
+    <color name="primary_dark_material_light">#d50000</color>
+    <color name="colorPrimaryDark">#9c0014</color>
+</resources>
