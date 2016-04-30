@@ -1,5 +1,4 @@
 <resources>
-
-    <string name="app_name">BeaconReference</string>
-
+    <string name="app_name">UnderMyUmbrella</string>
+    <string name="welcome_to">Welcome to</string>
 </resources>
