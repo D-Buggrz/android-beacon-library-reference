@@ -2,6 +2,7 @@ package com.dbuggrz.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,16 +11,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.dbuggrz.activities.async.AsyncImageCallback;
+import com.dbuggrz.helpers.DownloadImageTask;
+
 import org.altbeacon.beaconreference.MonitoringActivity;
 import org.altbeacon.beaconreference.R;
-
-import com.dbuggrz.helpers.DownloadImageTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends Activity implements AsyncImageCallback {
 
     private ListView mainListView ;
     private ArrayAdapter<String> listAdapter ;
@@ -64,7 +66,7 @@ public class HomeActivity extends Activity {
         });
 
         new DownloadImageTask((ImageView) findViewById(R.id.buildingImageView))
-                .execute("http://imgur.com/Shl0SPv");
+                .execute("https://i.imgur.com/cPLtMWk.jpg");
 
     }
 
@@ -78,5 +80,17 @@ public class HomeActivity extends Activity {
         Log.d(TAG, "onRangingClicked - we clicked a thing.");
         Intent myIntent = new Intent(this, MonitoringActivity.class);
         this.startActivity(myIntent);
+    }
+
+    @Override
+    public void downloadedBitmap(Bitmap bitmap) {
+
+        Log.i(TAG, "Found the bitmap - running on the UI thread");
+        runOnUiThread(new Runnable() {
+                          public void run() {
+                              ImageView view = ((ImageView) findViewById(R.id.buildingImageView));
+                          }
+                      }
+        );
     }
 }
