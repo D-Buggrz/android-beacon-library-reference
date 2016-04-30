@@ -34,4 +34,5 @@
         android:layout_below="@+id/monitoringText"
         android:text="Start Ranging" />
 
+
 </RelativeLayout>

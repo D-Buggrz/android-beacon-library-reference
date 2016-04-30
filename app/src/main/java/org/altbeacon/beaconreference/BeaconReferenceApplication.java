@@ -16,6 +16,9 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by dyoung on 12/13/13.
  */
@@ -25,6 +28,8 @@ public class BeaconReferenceApplication extends Application implements Bootstrap
     private BackgroundPowerSaver backgroundPowerSaver;
     private boolean haveDetectedBeaconsSinceBoot = false;
     private MonitoringActivity monitoringActivity = null;
+
+    private List<String> beaconUUIDs;
 
 
     public void onCreate() {
@@ -60,6 +65,8 @@ public class BeaconReferenceApplication extends Application implements Bootstrap
         // If you wish to test beacon detection in the Android Emulator, you can use code like this:
         // BeaconManager.setBeaconSimulator(new TimedBeaconSimulator() );
         // ((TimedBeaconSimulator) BeaconManager.getBeaconSimulator()).createTimedSimulatedBeacons();
+
+        this.beaconUUIDs = new LinkedList<String>();
     }
 
     @Override
