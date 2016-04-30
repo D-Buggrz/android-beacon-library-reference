@@ -2,6 +2,7 @@ package com.dbuggrz.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import org.altbeacon.beaconreference.R;
 
 public class ConfDetailActivity extends Activity {
 
