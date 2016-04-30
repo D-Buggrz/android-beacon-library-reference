@@ -1,18 +1,17 @@
 package com.dbuggrz.activities;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.altbeacon.beaconreference.R;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends Activity {
 
     private ListView mainListView ;
     private ArrayAdapter<String> listAdapter ;
@@ -21,7 +20,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.fadein, R.anim.fadeout);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
 
         // Find the ListView resource.
         mainListView = (ListView) findViewById( R.id.mainListView );

@@ -7,6 +7,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import org.altbeacon.beaconreference.R;
+
 
 /**
  * Created by jasonsit on 4/28/16.
@@ -19,7 +21,7 @@ public class Splash extends Activity {
 
         final ImageView iv = (ImageView) findViewById(R.id.imageView3);
         final Animation an = AnimationUtils.loadAnimation(getBaseContext(),R.anim.rotate);
-        final Animation an2 = AnimationUtils.loadAnimation(getBaseContext(),R.anim.abc_fade_out);
+        final Animation an2 = AnimationUtils.loadAnimation(getBaseContext(),R.anim.fadeout);
 
 
         iv.startAnimation(an);
