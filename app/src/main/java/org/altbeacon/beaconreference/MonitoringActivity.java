@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -52,10 +51,12 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 		verifyBluetooth();
 
 		ArrayList<String> listOfDetectedBeacons = new ArrayList<String>(0);
-		listAdapter =  new ArrayAdapter<String>(this, R.layout.simplerow, listOfDetectedBeacons);
+		listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, listOfDetectedBeacons);
 
 		ListView listView = (ListView) findViewById(R.id.listview_beacons);
 		listView.setAdapter(listAdapter);
+
+		beaconUUIDs = new ArrayList<>();
 
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -68,30 +69,29 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 			}
 		});
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Android M Permission check
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("This app needs location access");
-                builder.setMessage("Please grant location access so this app can detect beacons in the background.");
-                builder.setPositiveButton(android.R.string.ok, null);
-                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			// Android M Permission check
+			if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("This app needs location access");
+				builder.setMessage("Please grant location access so this app can detect beacons in the background.");
+				builder.setPositiveButton(android.R.string.ok, null);
+				builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
-                    @TargetApi(23)
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                PERMISSION_REQUEST_COARSE_LOCATION);
-                    }
+					@TargetApi(23)
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+								PERMISSION_REQUEST_COARSE_LOCATION);
+					}
 
-                });
-                builder.show();
-            }
-        }
+				});
+				builder.show();
+			}
+		}
 		BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
 		beaconReferenceApplication.setMonitoringActivity(this);
 
-		beaconUUIDs = new ArrayList<>();
 		beaconManager.bind(this);
 		Log.i(TAG, "Starting the ranging activity.");
 	}
@@ -128,26 +128,25 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 		this.startActivity(myIntent);
 	}
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
+	@Override
+	public void onResume() {
+		super.onResume();
+		BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
 		beaconReferenceApplication.setMonitoringActivity(this);
 
 		BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
 		beaconManager.bind(this);
-    }
+	}
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
+	@Override
+	public void onPause() {
+		super.onPause();
+	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		beaconManager.unbind(this);
-		this.beaconUUIDs = null;
 	}
 
 	private void verifyBluetooth() {
@@ -155,22 +154,21 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 		try {
 			if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Bluetooth not enabled");			
+				builder.setTitle("Bluetooth not enabled");
 				builder.setMessage("Please enable bluetooth in settings and restart this application.");
 				builder.setPositiveButton(android.R.string.ok, null);
 				builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					@Override
 					public void onDismiss(DialogInterface dialog) {
 						finish();
-			            System.exit(0);					
-					}					
+						System.exit(0);
+					}
 				});
 				builder.show();
-			}			
-		}
-		catch (RuntimeException e) {
+			}
+		} catch (RuntimeException e) {
 			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Bluetooth LE not available");			
+			builder.setTitle("Bluetooth LE not available");
 			builder.setMessage("Sorry, this device does not support Bluetooth LE.");
 			builder.setPositiveButton(android.R.string.ok, null);
 			builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -178,25 +176,23 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					finish();
-		            System.exit(0);					
+					System.exit(0);
 				}
-				
+
 			});
 			builder.show();
-			
-		}
-		
-	}	
 
-    public void logToDisplay(final String line) {
-    	runOnUiThread(new Runnable() {
+		}
+
+	}
+
+	public void logToDisplay(final String line) {
+		runOnUiThread(new Runnable() {
 			public void run() {
-				EditText editText = (EditText) MonitoringActivity.this
-						.findViewById(R.id.monitoringText);
-				editText.append(line + "\n");
+				Log.i(TAG, line);
 			}
 		});
-    }
+	}
 
 	@Override
 	public void onBeaconServiceConnect() {
@@ -229,7 +225,8 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 						Log.d(TAG, "Found a beacon - " + beaconUUIDString +
 								" address: " + nextBeacon.getBluetoothAddress() +
 								", name: " + nextBeacon.getBluetoothName() +
-								", distance: " + nextBeacon.getDistance());
+								", distance: " + nextBeacon.getDistance() +
+								", service uuid: " + nextBeacon.getServiceUuid());
 						if (!beaconUUIDs.contains(beaconUUIDString)) {
 							beaconUUIDs.add(beaconUUIDString);
 							foundANewBeacon = true;
@@ -255,10 +252,13 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 	 */
 	public void addBeaconsToList() {
 
-		Log.d(TAG, "Looking for the currently detected beacons. ");
-//		new BeaconsListAsyncTask().execute("", "");
-		listAdapter.clear();
-		listAdapter.addAll(beaconUUIDs);
+		runOnUiThread(new Runnable() {
+			public void run() {
+				Log.d(TAG, "Looking for the currently detected beacons. ");
+//				new BeaconsListAsyncTask().execute("", "");
+				listAdapter.clear();
+				listAdapter.addAll(beaconUUIDs);
+			}
+		});
 	}
-
 }
