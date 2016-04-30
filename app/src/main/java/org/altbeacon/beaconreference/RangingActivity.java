@@ -1,21 +1,18 @@
 package org.altbeacon.beaconreference;
 
-import java.util.Collection;
-
 import android.app.Activity;
-
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.EditText;
 
-import org.altbeacon.beacon.AltBeacon;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+
+import java.util.Collection;
 
 public class RangingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";
@@ -24,9 +21,11 @@ public class RangingActivity extends Activity implements BeaconConsumer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "Starting the ranging activity");
         setContentView(R.layout.activity_ranging);
 
         beaconManager.bind(this);
+        Log.i(TAG, "Starting the ranging activity");
     }
 
     @Override 
@@ -49,6 +48,7 @@ public class RangingActivity extends Activity implements BeaconConsumer {
 
     @Override
     public void onBeaconServiceConnect() {
+        Log.i(TAG, "we have a service connection.");
         beaconManager.setRangeNotifier(new RangeNotifier() {
            @Override
            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {

@@ -1,5 +1,8 @@
 ## Overview
 
+DBuggerz - we forked this repository from the reference application. We are making this
+ work with iBeacons (not alt Beacons).
+
 This is an Android Studio reference app for the AndroidBeaconLibrary supporting AltBeacon compatible devices
 
 If you are looking for an Eclipse reference project, see the eclipse branch.

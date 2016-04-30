@@ -2,24 +2,18 @@ package org.altbeacon.beaconreference;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.RemoteException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
-import org.altbeacon.beacon.MonitorNotifier;
-import org.altbeacon.beacon.Region;
 
 /**
  * 
@@ -33,7 +27,7 @@ public class MonitoringActivity extends Activity  {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate");
+		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_monitoring);
 		verifyBluetooth();
@@ -88,6 +82,7 @@ public class MonitoringActivity extends Activity  {
 	}
 
 	public void onRangingClicked(View view) {
+		Log.d(TAG, "onRangingClicked - we clicked a thing.");
 		Intent myIntent = new Intent(this, RangingActivity.class);
 		this.startActivity(myIntent);
 	}
@@ -105,7 +100,7 @@ public class MonitoringActivity extends Activity  {
     }
 
 	private void verifyBluetooth() {
-
+		Log.i(TAG, "checking for bluetooth");
 		try {
 			if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
 				final AlertDialog.Builder builder = new AlertDialog.Builder(this);
