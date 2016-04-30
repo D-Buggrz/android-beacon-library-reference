@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.dbuggrz.activities.RoomDetailActivity;
+import com.dbuggrz.activities.async.BeaconsListAsyncTask;
 import com.dbuggrz.activities.async.LocationDetail;
 
 import org.altbeacon.beacon.Beacon;
@@ -231,7 +232,7 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 					boolean foundANewBeacon = false;
 					for (Beacon nextBeacon : beacons) {
 						String beaconUUIDString = String.valueOf(nextBeacon.getBluetoothAddress());
-						Log.d(TAG, "Found a beacon - " + beaconUUIDString +
+						Log.i(TAG, "Found a beacon - " + beaconUUIDString +
 								" address: " + nextBeacon.getBluetoothAddress() +
 								", name: " + nextBeacon.getBluetoothName() +
 								", distance: " + nextBeacon.getDistance() +
@@ -260,14 +261,7 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 	 * @return
 	 */
 	public void addBeaconsToList() {
-
-		runOnUiThread(new Runnable() {
-			public void run() {
-				Log.d(TAG, "Looking for the currently detected beacons. ");
-//				new BeaconsListAsyncTask().execute("", "");
-				listAdapter.clear();
-				listAdapter.addAll(beaconUUIDs);
-			}
-		});
+		Log.d(TAG, "Looking for the currently detected beacons. ");
+		new BeaconsListAsyncTask().execute();
 	}
 }
