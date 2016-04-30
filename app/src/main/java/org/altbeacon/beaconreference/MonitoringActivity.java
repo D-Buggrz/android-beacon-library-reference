@@ -100,7 +100,7 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 			}
 		}
 		BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
-		beaconReferenceApplication.setMonitoringActivity(this);
+//		beaconReferenceApplication.setMonitoringActivity(this);
 
 		beaconManager.bind(this);
 		Log.i(TAG, "Starting the ranging activity.");
@@ -142,7 +142,7 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 	public void onResume() {
 		super.onResume();
 		BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
-		beaconReferenceApplication.setMonitoringActivity(this);
+//		beaconReferenceApplication.setMonitoringActivity(this);
 
 		BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
 		beaconManager.bind(this);
