@@ -5,6 +5,8 @@ package com.dbuggrz.activities.async;
  */
 public class LocationDetail {
 
+    private String uuid;
+
     private String name;
 
     private String description;
@@ -23,5 +25,13 @@ public class LocationDetail {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

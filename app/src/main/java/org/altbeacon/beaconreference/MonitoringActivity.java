@@ -17,6 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.dbuggrz.activities.RoomDetailActivity;
+import com.dbuggrz.activities.async.LocationDetail;
+
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -39,7 +42,9 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 
 	BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
 
-	private List<String> beaconUUIDs;
+	private static List<String> beaconUUIDs;
+
+	public static List<LocationDetail> locations;
 
 	public static ArrayAdapter<String> listAdapter;
 
@@ -61,11 +66,15 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				String listItemText = listAdapter.getItem(position);
+				LocationDetail nextLocation = locations.get(position);
 				// Executed in an Activity, so 'this' is the Context
 				// The fileUrl is a string URL, such as "http://www.example.com/image.png"
-				Toast toast = Toast.makeText(getApplicationContext(), listItemText, Toast.LENGTH_SHORT);
+				Toast toast = Toast.makeText(getApplicationContext(), nextLocation.getName() + ": " + nextLocation.getUuid(), Toast.LENGTH_SHORT);
 				toast.show();
+
+				Intent roomDetailIntent = new Intent(view.getContext(), RoomDetailActivity.class);
+				roomDetailIntent.putExtra(Intent.EXTRA_TEXT, nextLocation.getUuid());
+				startActivity(roomDetailIntent);
 			}
 		});
 
