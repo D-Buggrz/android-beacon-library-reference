@@ -37,11 +37,12 @@ import java.util.List;
 public class MonitoringActivity extends Activity implements BeaconConsumer {
 	protected static final String TAG = "MonitoringActivity";
 	private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-	private ArrayAdapter<String> listAdapter ;
 
 	BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
 
 	private List<String> beaconUUIDs;
+
+	public static ArrayAdapter<String> listAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,20 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 
 		ArrayList<String> listOfDetectedBeacons = new ArrayList<String>(0);
 		listAdapter =  new ArrayAdapter<String>(this, R.layout.simplerow, listOfDetectedBeacons);
+
+		ListView listView = (ListView) findViewById(R.id.listview_beacons);
+		listView.setAdapter(listAdapter);
+
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String listItemText = listAdapter.getItem(position);
+				// Executed in an Activity, so 'this' is the Context
+				// The fileUrl is a string URL, such as "http://www.example.com/image.png"
+				Toast toast = Toast.makeText(getApplicationContext(), listItemText, Toast.LENGTH_SHORT);
+				toast.show();
+			}
+		});
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Android M Permission check
@@ -241,29 +256,9 @@ public class MonitoringActivity extends Activity implements BeaconConsumer {
 	public void addBeaconsToList() {
 
 		Log.d(TAG, "Looking for the currently detected beacons. ");
-		runOnUiThread(new Runnable() {
-			public void run() {
-				if (beaconUUIDs != null && beaconUUIDs.size() > 0) {
-					listAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.simplerow, beaconUUIDs);
-					ListView listView = (ListView) findViewById(R.id.listview_beacons);
-					listView.setAdapter(listAdapter);
-
-					listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-						@Override
-						public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-							String listItemText = listAdapter.getItem(position);
-							// Executed in an Activity, so 'this' is the Context
-							// The fileUrl is a string URL, such as "http://www.example.com/image.png"
-							Toast toast = Toast.makeText(getApplicationContext(), listItemText, Toast.LENGTH_SHORT);
-							toast.show();
-						}
-					});
-				} else {
-					Toast toast = Toast.makeText(getApplicationContext(), "There are no regions.", Toast.LENGTH_SHORT);
-					toast.show();
-				}
-			}
-		});
+//		new BeaconsListAsyncTask().execute("", "");
+		listAdapter.clear();
+		listAdapter.addAll(beaconUUIDs);
 	}
 
 }
