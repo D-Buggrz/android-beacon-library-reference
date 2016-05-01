@@ -14,13 +14,26 @@
         android:layout_height="wrap_content"
         android:id="@+id/mainListView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="135dp" />
+        android:layout_alignParentEnd="false"
+        android:layout_marginTop="44dp"
+        android:layout_below="@+id/bldgWelcomeTextView" />
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:id="@+id/buildingImageView"
-
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/mainListView"
+        android:layout_marginBottom="293dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Welcome to building name"
+        android:id="@+id/bldgWelcomeTextView"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
