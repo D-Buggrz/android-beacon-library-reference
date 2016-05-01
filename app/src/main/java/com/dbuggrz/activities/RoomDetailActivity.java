@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dbuggrz.activities.async.BeaconsDetailAsyncTask;
@@ -55,9 +57,10 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
                 if (beacons.size() > 0) {
                     //EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
                     Beacon firstBeacon = beacons.iterator().next();
-                    Log.e(TAG, "The first beacon " + firstBeacon.getBluetoothAddress() + " is about " + firstBeacon.getDistance() + " meters away." + " and might not match " + uuid);
+                    Log.i(TAG, "The first beacon " + firstBeacon.getId1() + " is about " + firstBeacon.getDistance() + " meters away." + " and might not match " + uuid);
                     for (Beacon nextBeacon : beacons) {
-                        if (uuid.equalsIgnoreCase(nextBeacon.getBluetoothAddress())) {
+                        String beaconId = nextBeacon.getId1().toString();
+                        if (uuid.equalsIgnoreCase(beaconId)) {
                             Log.i(TAG, "Updating the range for this bad boy");
                             foundBeacon = true;
                             updateDistance(nextBeacon.getDistance());
@@ -106,7 +109,7 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
                 Log.i(TAG, "updating room detail with " + roomDetail.getUuid());
                 ((TextView) findViewById(R.id.locationName)).setText(roomDetail.getName());
                 ((TextView) findViewById(R.id.descriptionText)).setText(roomDetail.getDescription());
-                ((TextView) findViewById(R.id.agendaLabel)).setText(((RoomDetail) roomDetail).getMeetingAgenda());
+                ((TextView) findViewById(R.id.agendaText)).setText(((RoomDetail) roomDetail).getMeetingAgenda());
             }
         });
     }
@@ -115,12 +118,29 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
      * Updates the distance on the UI
      * @param distance
      */
-    private void updateDistance(Double distance) {
+    private void updateDistance(final Double distance) {
         final String distanceString = distance > 0 ? String.format( "%.2f meters away", distance ) : "Out of Range";
 
         runOnUiThread(new Runnable() {
             public void run() {
-                ((TextView) findViewById(R.id.distance)).setText(distanceString);
+                TextView distanceView = (TextView) findViewById(R.id.distance);
+                distanceView.setText(distanceString);
+                TextView agendaLabel = (TextView) findViewById(R.id.agendaLabel);
+                TextView agenda = (TextView) findViewById(R.id.agendaText);
+                ImageView imageView = (ImageView) findViewById(R.id.mapImg);
+                if (distance > 2) {
+                    agendaLabel.setVisibility(View.GONE);
+                    agenda.setVisibility(View.GONE);
+                    imageView.setVisibility(View.VISIBLE);
+                } else if (distance < 0) {
+                    agendaLabel.setVisibility(View.GONE);
+                    agenda.setVisibility(View.GONE);
+                    imageView.setVisibility(View.VISIBLE);
+                } else {
+                    distanceView.setText("You are here!");
+                    agenda.setVisibility(View.VISIBLE);
+                    imageView.setVisibility(View.GONE);
+                }
             }
         });
     }

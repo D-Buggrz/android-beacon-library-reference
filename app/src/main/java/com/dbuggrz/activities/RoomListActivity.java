@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.dbuggrz.activities.async.BeaconsListAsyncTask;
+import com.dbuggrz.activities.async.BuildingDetail;
 import com.dbuggrz.activities.async.LocationDetail;
 
 import org.altbeacon.beacon.Beacon;
@@ -45,6 +46,8 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
 
     public static List<LocationDetail> locations;
 
+    public static ArrayList<String> listOfDetectedBeacons;
+
     public static ArrayAdapter<String> listAdapter;
 
     @Override
@@ -54,7 +57,7 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
         setContentView(R.layout.activity_room_list);
         verifyBluetooth();
 
-        ArrayList<String> listOfDetectedBeacons = new ArrayList<String>(0);
+        listOfDetectedBeacons = new ArrayList<String>(0);
         listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, listOfDetectedBeacons);
 
         ListView listView = (ListView) findViewById(R.id.roomListView);
@@ -108,6 +111,8 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+        new BeaconsListAsyncTask().execute();
         Log.i(TAG, "Starting the ranging activity.");
     }
 
@@ -239,20 +244,18 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
                     //EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
                     boolean foundANewBeacon = false;
                     for (Beacon nextBeacon : beacons) {
-                        String beaconUUIDString = nextBeacon.getBluetoothAddress();
+                        String beaconUUIDString = nextBeacon.getId1().toString();
                         Log.i(TAG, "Found a beacon - " + beaconUUIDString +
                                 " address: " + nextBeacon.getBluetoothAddress() +
                                 ", name: " + nextBeacon.getBluetoothName() +
                                 ", distance: " + nextBeacon.getDistance() +
-                                ", service uuid: " + nextBeacon.getServiceUuid());
+                                ", service uuid: " + nextBeacon.getServiceUuid() +
+                                ", string: " + nextBeacon.toString());
                         if (!beaconUUIDs.contains(beaconUUIDString)) {
                             beaconUUIDs.add(beaconUUIDString);
-                            foundANewBeacon = true;
                         }
                     }
-                    if (foundANewBeacon) {
-                        addBeaconsToList();
-                    }
+                    addBeaconsToList();
                 }
             }
 
@@ -269,7 +272,28 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
      * @return
      */
     public void addBeaconsToList() {
-        Log.d(TAG, "Looking for the currently detected beacons. ");
-        new BeaconsListAsyncTask().execute();
+        Log.d(TAG, "Looking for the currently detected beacons. " + (beaconUUIDs == null ? "null" : beaconUUIDs.size()));
+        if (locations == null) {
+            return;
+        }
+        for (int i = 0; i < locations.size(); i++) {
+            boolean datasetChanged = false;
+            if (beaconUUIDs.contains(locations.get(i).getUuid()) && !(locations.get(i) instanceof BuildingDetail)) {
+                Log.d(TAG, "Updating the beacon with beacon found. ");
+                String name = listOfDetectedBeacons.get(i);
+                if (!name.startsWith("(*)")) {
+                    Log.d(TAG, "The dataset has been changed. ");
+                    datasetChanged = true;
+                    listOfDetectedBeacons.set(i, "(*) " + locations.get(i).getName());
+                }
+            }
+            if (datasetChanged) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        listAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }
     }
 }
