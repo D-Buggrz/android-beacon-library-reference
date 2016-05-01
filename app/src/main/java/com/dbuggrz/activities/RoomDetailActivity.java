@@ -116,13 +116,12 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
 
                 // The fileUrl is a string URL, such as "http://www.example.com/image.png"
                 ImageView imageView = (ImageView) findViewById(R.id.mapImg);
-                if (roomDetail.getImageUrl() != null && roomDetail.getImageUrl().trim().length() > 0) {
-                    new DownloadImageTask((ImageView) findViewById(R.id.mapImg))
-                            .execute(roomDetail.getImageUrl());
-                } else {
-                    new DownloadImageTask((ImageView) findViewById(R.id.mapImg))
-                            .execute("http://s2.quickmeme.com/img/e6/e6169379f24dc93829e91b8235984d2db26998ecc079aa4ad9dedb07d4af0f02.jpg");
+                String urlToTry = roomDetail.getImageUrl();
+                if (roomDetail.getImageUrl() == null || roomDetail.getImageUrl().trim().length() <= 0) {
+                    urlToTry = "http://s2.quickmeme.com/img/e6/e6169379f24dc93829e91b8235984d2db26998ecc079aa4ad9dedb07d4af0f02.jpg";
                 }
+                DownloadImageTask dliTask = new DownloadImageTask((ImageView) findViewById(R.id.mapImg));
+                dliTask.execute(urlToTry);
             }
         });
     }

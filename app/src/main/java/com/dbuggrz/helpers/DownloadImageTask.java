@@ -4,6 +4,7 @@ package com.dbuggrz.helpers;
  * Created by jasonsit on 4/30/16.
  */
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -15,6 +16,10 @@ import java.io.InputStream;
 
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
+
+    public boolean scaleImage;
+
+    public Activity parentActivity;
 
     public DownloadImageTask(ImageView bmImage) {
         this.bmImage = bmImage;
@@ -37,4 +42,22 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     protected void onPostExecute(Bitmap result) {
         bmImage.setImageBitmap(result);
     }
+
+
+//    private float getBitmapScalingFactor(Bitmap bm) {
+//        // Get display width from device
+//        int displayWidth = parentActivity.getWindowManager().getDefaultDisplay().getWidth();
+//
+//        // Get margin to use it for calculating to max width of the ImageView
+//        LinearLayout.LayoutParams layoutParams =
+//                (LinearLayout.LayoutParams)this.imageView.getLayoutParams();
+//        int leftMargin = layoutParams.leftMargin;
+//        int rightMargin = layoutParams.rightMargin;
+//
+//        // Calculate the max width of the imageView
+//        int imageViewWidth = displayWidth - (leftMargin + rightMargin);
+//
+//        // Calculate scaling factor and return it
+//        return ( (float) imageViewWidth / (float) bm.getWidth() );
+//    }
 }
