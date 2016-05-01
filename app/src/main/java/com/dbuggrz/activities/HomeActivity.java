@@ -53,9 +53,8 @@ public class HomeActivity extends Activity implements AsyncImageCallback {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String listItemText = listAdapter.getItem(position);
                 // Executed in an Activity, so 'this' is the Context
-                // The fileUrl is a string URL, such as "http://www.example.com/image.png"
                 if ("Employee Directory".equalsIgnoreCase(listItemText)) {
-                    Intent monitoringIntent = new Intent(view.getContext(), MonitoringActivity.class);
+                    Intent monitoringIntent = new Intent(view.getContext(), RoomListActivity.class);
                     startActivity(monitoringIntent);
                 }
                 if ("Conference Rooms Near Me".equalsIgnoreCase(listItemText)) {
@@ -65,6 +64,7 @@ public class HomeActivity extends Activity implements AsyncImageCallback {
             }
         });
 
+        // The fileUrl is a string URL, such as "http://www.example.com/image.png"
         new DownloadImageTask((ImageView) findViewById(R.id.buildingImageView))
                 .execute("https://i.imgur.com/cPLtMWk.jpg");
 

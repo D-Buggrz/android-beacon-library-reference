@@ -41,7 +41,7 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
 
     BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
 
-    private static List<String> beaconUUIDs;
+    public static List<String> beaconUUIDs;
 
     public static List<LocationDetail> locations;
 
@@ -73,6 +73,7 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
 
                 Intent roomDetailIntent = new Intent(view.getContext(), RoomDetailActivity.class);
                 roomDetailIntent.putExtra(Intent.EXTRA_TEXT, nextLocation.getUuid());
+                roomDetailIntent.putExtra(Intent.EXTRA_TEXT + "_1", nextLocation.getId());
                 startActivity(roomDetailIntent);
             }
         });
@@ -101,6 +102,12 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
         beaconReferenceApplication.setMonitoringActivity(this);
 
         beaconManager.bind(this);
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         Log.i(TAG, "Starting the ranging activity.");
     }
 
@@ -142,18 +149,21 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
         BeaconReferenceApplication beaconReferenceApplication = ((BeaconReferenceApplication) this.getApplicationContext());
         beaconReferenceApplication.setMonitoringActivity(this);
 
-        BeaconManager beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
+        if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(false);
+        beaconManager.unbind(this);
         beaconManager.bind(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        beaconManager.unbind(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
         beaconManager.unbind(this);
     }
 
@@ -229,7 +239,7 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
                     //EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
                     boolean foundANewBeacon = false;
                     for (Beacon nextBeacon : beacons) {
-                        String beaconUUIDString = String.valueOf(nextBeacon.getBluetoothAddress());
+                        String beaconUUIDString = nextBeacon.getBluetoothAddress();
                         Log.i(TAG, "Found a beacon - " + beaconUUIDString +
                                 " address: " + nextBeacon.getBluetoothAddress() +
                                 ", name: " + nextBeacon.getBluetoothName() +
