@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.dbuggrz.activities.async.BeaconsDetailAsyncTask;
 import com.dbuggrz.activities.async.LocationDetail;
 import com.dbuggrz.activities.async.RoomDetail;
+import com.dbuggrz.helpers.DownloadImageTask;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -57,11 +58,11 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
                 if (beacons.size() > 0) {
                     //EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
                     Beacon firstBeacon = beacons.iterator().next();
-                    Log.i(TAG, "The first beacon " + firstBeacon.getId1() + " is about " + firstBeacon.getDistance() + " meters away." + " and might not match " + uuid);
+                    Log.d(TAG, "The first beacon " + firstBeacon.getId1() + " is about " + firstBeacon.getDistance() + " meters away." + " and might not match " + uuid);
                     for (Beacon nextBeacon : beacons) {
                         String beaconId = nextBeacon.getId1().toString();
                         if (uuid.equalsIgnoreCase(beaconId)) {
-                            Log.i(TAG, "Updating the range for this bad boy");
+                            Log.d(TAG, "Updating the range for this bad boy");
                             foundBeacon = true;
                             updateDistance(nextBeacon.getDistance());
                         }
@@ -110,6 +111,16 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
                 ((TextView) findViewById(R.id.locationName)).setText(roomDetail.getName());
                 ((TextView) findViewById(R.id.descriptionText)).setText(roomDetail.getDescription());
                 ((TextView) findViewById(R.id.agendaText)).setText(((RoomDetail) roomDetail).getMeetingAgenda());
+
+                // The fileUrl is a string URL, such as "http://www.example.com/image.png"
+                ImageView imageView = (ImageView) findViewById(R.id.mapImg);
+                if (roomDetail.getImageUrl() != null && roomDetail.getImageUrl().trim().length() > 0) {
+                    new DownloadImageTask((ImageView) findViewById(R.id.mapImg))
+                            .execute(roomDetail.getImageUrl());
+                } else {
+                    new DownloadImageTask((ImageView) findViewById(R.id.mapImg))
+                            .execute("http://s2.quickmeme.com/img/e6/e6169379f24dc93829e91b8235984d2db26998ecc079aa4ad9dedb07d4af0f02.jpg");
+                }
             }
         });
     }

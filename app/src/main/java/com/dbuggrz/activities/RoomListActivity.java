@@ -245,7 +245,7 @@ public class RoomListActivity extends Activity implements BeaconConsumer {
                     boolean foundANewBeacon = false;
                     for (Beacon nextBeacon : beacons) {
                         String beaconUUIDString = nextBeacon.getId1().toString();
-                        Log.i(TAG, "Found a beacon - " + beaconUUIDString +
+                        Log.d(TAG, "Found a beacon - " + beaconUUIDString +
                                 " address: " + nextBeacon.getBluetoothAddress() +
                                 ", name: " + nextBeacon.getBluetoothName() +
                                 ", distance: " + nextBeacon.getDistance() +
