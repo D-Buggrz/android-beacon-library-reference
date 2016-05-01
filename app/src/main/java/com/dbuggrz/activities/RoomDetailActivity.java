@@ -116,7 +116,7 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
      * @param distance
      */
     private void updateDistance(Double distance) {
-        final String distanceString = distance > 0 ? String.format( "Value of a: %.2f", distance ) : "Out of Range";
+        final String distanceString = distance > 0 ? String.format( "%.2f meters away", distance ) : "Out of Range";
 
         runOnUiThread(new Runnable() {
             public void run() {
