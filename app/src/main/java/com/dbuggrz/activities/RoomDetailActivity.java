@@ -1,7 +1,6 @@
 package com.dbuggrz.activities;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -142,7 +141,7 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
                 TextView agendaLabel = (TextView) findViewById(R.id.agendaLabel);
                 TextView agenda = (TextView) findViewById(R.id.agendaText);
                 ImageView imageView = (ImageView) findViewById(R.id.mapImg);
-                if (distance > 2) {
+                if (distance > 1) {
                     agendaLabel.setVisibility(View.GONE);
                     agenda.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
@@ -152,6 +151,7 @@ public class RoomDetailActivity extends Activity implements BeaconConsumer {
                     imageView.setVisibility(View.VISIBLE);
                 } else {
                     distanceView.setText("You are here!");
+                    agendaLabel.setVisibility(View.VISIBLE);
                     agenda.setVisibility(View.VISIBLE);
                     imageView.setVisibility(View.GONE);
                 }
